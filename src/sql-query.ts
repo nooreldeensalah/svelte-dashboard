@@ -23,8 +23,7 @@ async function load(sqlQuery) {
   );
 
   const result = await worker.db.query(sqlQuery);
-
-  document.body.textContent = JSON.stringify(result);
+  return result;
 }
 
 export default load;
