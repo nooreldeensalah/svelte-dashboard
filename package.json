@@ -21,6 +21,10 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack",
     "dev": "webpack serve --content-base public",
-    "validate": "svelte-check"
+    "validate": "svelte-check",
+    "build-sql": "webpack"
+  },
+  "dependencies": {
+    "sql.js-httpvfs": "^0.8.9"
   }
 }

@@ -1,5 +1,7 @@
 <script lang="ts">
 	export let name: string;
+	import load from "./sql-query"
+	load("SELECT * FROM participant")
 </script>
 
 <main>
