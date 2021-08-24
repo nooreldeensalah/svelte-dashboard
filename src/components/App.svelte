@@ -1,19 +1,50 @@
 <!-- App.svelte is the root component -->
 <script lang="ts">
-  import type { Participant } from "../types/Participant";
-  import type { Label } from "../types/Label";
-  import type { Meeting } from "../types/Meeting";
-
+  import type { Meeting, Label, Participant } from "../types"
+  import { Datatable, rows } from "svelte-simple-datatables";
+  import requests from "../requests"
   import load from "../sql-query";
 
-  let name = "Noor";
-  let participants_query: Promise<Array<Participant>> = load(
-    "SELECT * FROM participant"
-  );
+  let settings = {columnFilter: true}
+
+  let participants: Array<Participant>;
+  load("SELECT * FROM participant").then(async(values) => participants = values)
+
+  let handleEdit = (event, index) => {
+    let resourceId = event.target.attributes["data-id"].value
+    let resourceType = event.target.attributes["data-type"].value
+    let requestBody; // TODO: Implement pop-up form for requestBody
+    requests.patchResource(resourceId, resourceType, requestBody).then(response => participants[index] = response.data).catch(error => alert(error))
+  }
 </script>
 
-{#await participants_query then participants}
-  {#each participants as participant}
-    <div>{participant.name}</div>
-  {/each}
-{/await}
+<Datatable {settings} data={participants}>
+  <thead>
+    <th data-key="id">ID</th>
+    <th data-key="name">Name</th>
+    <th>Actions</th>
+  </thead>
+  <tbody>
+    {#each $rows as row, i}
+      <tr>
+        <td>
+          {row.id}
+        </td>
+        <td>
+          {row.name}
+        </td>
+        <td>
+          <button data-type="participants" data-id={row.id} on:click={(event, index=i) => handleEdit(event, index)}>Edit</button>
+          <!-- <button data-type="participants" data-id={row.id} on:click={handleDelete}>Delete</button> -->
+        </td>
+      </tr>
+    {/each}
+  </tbody>
+</Datatable>
+
+<style>
+  td {
+    text-align: center;
+    padding: 4px 0;
+  }
+</style>

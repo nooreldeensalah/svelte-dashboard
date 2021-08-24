@@ -25,6 +25,8 @@
     "build-sql": "webpack"
   },
   "dependencies": {
-    "sql.js-httpvfs": "^0.8.9"
+    "axios": "^0.21.1",
+    "sql.js-httpvfs": "^0.8.9",
+    "svelte-simple-datatables": "^0.1.25"
   }
 }
