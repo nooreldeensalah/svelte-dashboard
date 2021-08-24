@@ -1,18 +1,19 @@
+<!-- App.svelte is the root component -->
 <script lang="ts">
-  let name = "Noor";
+  import type { Participant } from "../types/Participant";
+  import type { Label } from "../types/Label";
+  import type { Meeting } from "../types/Meeting";
+
   import load from "../sql-query";
 
-  let participants = load("SELECT * FROM participant");
-  console.log(participants);
+  let name = "Noor";
+  let participants_query: Promise<Array<Participant>> = load(
+    "SELECT * FROM participant"
+  );
 </script>
 
-<h1>Hello {name}!</h1>
-
-<style>
-  h1 {
-    color: #ff3e00;
-    text-transform: uppercase;
-    font-size: 4em;
-    font-weight: 100;
-  }
-</style>
+{#await participants_query then participants}
+  {#each participants as participant}
+    <div>{participant.name}</div>
+  {/each}
+{/await}
