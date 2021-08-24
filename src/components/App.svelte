@@ -1,21 +1,29 @@
 <!-- App.svelte is the root component -->
 <script lang="ts">
-  import type { Meeting, Label, Participant } from "../types"
+  import type { Participant } from "../types";
   import { Datatable, rows } from "svelte-simple-datatables";
-  import requests from "../requests"
+  import requests from "../requests";
   import load from "../sql-query";
+  import { onMount } from "svelte";
 
-  let settings = {columnFilter: true}
+  let settings = { columnFilter: true };
 
   let participants: Array<Participant>;
-  load("SELECT * FROM participant").then(async(values) => participants = values)
+  onMount(() =>
+    load("SELECT * FROM participant").then(
+      async (values) => (participants = values)
+    )
+  );
 
   let handleEdit = (event, index) => {
-    let resourceId = event.target.attributes["data-id"].value
-    let resourceType = event.target.attributes["data-type"].value
+    let resourceId = event.target.attributes["data-id"].value;
+    let resourceType = event.target.attributes["data-type"].value;
     let requestBody; // TODO: Implement pop-up form for requestBody
-    requests.patchResource(resourceId, resourceType, requestBody).then(response => participants[index] = response.data).catch(error => alert(error))
-  }
+    requests
+      .patchResource(resourceId, resourceType, requestBody)
+      .then((response) => (participants[index] = response.data))
+      .catch((error) => alert(error));
+  };
 </script>
 
 <Datatable {settings} data={participants}>
@@ -25,17 +33,16 @@
     <th>Actions</th>
   </thead>
   <tbody>
-    {#each $rows as row, i}
+    {#each $rows as { id, name }, i}
       <tr>
         <td>
-          {row.id}
+          {id}
         </td>
         <td>
-          {row.name}
+          {name}
         </td>
         <td>
-          <button data-type="participants" data-id={row.id} on:click={(event, index=i) => handleEdit(event, index)}>Edit</button>
-          <!-- <button data-type="participants" data-id={row.id} on:click={handleDelete}>Delete</button> -->
+          <button data-type="participants" data-id={id} on:click={(event, index = i) => handleEdit(event, index)} >Edit</button>
         </td>
       </tr>
     {/each}
