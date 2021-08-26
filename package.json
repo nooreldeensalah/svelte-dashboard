@@ -30,6 +30,7 @@
     "sql.js-httpvfs": "^0.8.9",
     "svelte-forms-lib": "^1.10.5",
     "svelte-simple-datatables": "^0.1.25",
+    "svelte-simple-modal": "^1.0.0",
     "yup": "^0.32.9"
   }
 }

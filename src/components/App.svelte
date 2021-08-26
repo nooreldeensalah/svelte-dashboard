@@ -1,33 +1,33 @@
 <!-- App.svelte is the root component -->
 <script lang="ts">
-  import type { Participant } from "../types";
   import { Datatable, rows } from "svelte-simple-datatables";
   import requests from "../requests";
   import load from "../sql-query";
   import { onMount } from "svelte";
   import Form from "./Form.svelte";
-  import { formObject } from "../stores";
+  import FormModal from "./FormModal.svelte";
+  import { participants, modal } from "../stores";
+  import { bind } from "svelte-simple-modal";
 
   let settings = { columnFilter: true };
-  let participants: Array<Participant>;
 
   onMount(() =>
-    load("SELECT * FROM participant").then((values) => (participants = values))
+    load("SELECT * FROM participant").then((values) => participants.set(values))
   );
 
   let handleEdit = (event, index) => {
-    let resourceId = event.target.attributes["data-id"].value;
-    let resourceType = event.target.attributes["data-type"].value;
-    let requestBody; // TODO: Implement pop-up form for requestBody
-
-    requests
-      .patchResource(resourceId, resourceType, requestBody)
-      .then((response) => (participants[index] = response.data))
-      .catch((error) => alert(error));
+    modal.set(
+      bind(Form, {
+        index: index,
+        resourceId: event.target.attributes["data-id"].value,
+        resourceType: event.target.attributes["data-type"].value,
+        formMethod: requests.patchResource,
+      })
+    );
   };
 </script>
 
-<Datatable {settings} data={participants}>
+<Datatable {settings} data={$participants}>
   <thead>
     <th data-key="id">ID</th>
     <th data-key="name">Name</th>
@@ -43,12 +43,19 @@
           {name}
         </td>
         <td>
-          <button data-type="participants" data-id={id} on:click={(event, index = i) => handleEdit(event, index)}>Edit</button>
+          <button
+            data-type="participants"
+            data-id={id}
+            on:click={(event, index = i) => handleEdit(event, index)}
+            >Edit</button
+          >
         </td>
       </tr>
     {/each}
   </tbody>
 </Datatable>
+
+<FormModal />
 
 <style>
   td {

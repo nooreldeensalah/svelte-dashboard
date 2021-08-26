@@ -1,3 +1,6 @@
-import { writable } from "svelte/store";
+import { Writable, writable } from "svelte/store";
+import type { Participant } from "./types";
 
-export let formObject = writable({}); // Participant form object.
+export const modal = writable(null);
+
+export let participants: Writable<Array<Participant>> = writable([]);

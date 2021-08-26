@@ -1,25 +1,36 @@
 <script>
   import { createForm } from "svelte-forms-lib";
   import * as yup from "yup";
-  import { formObject } from "../stores";
+  import { getContext } from "svelte";
+  import { participants } from "../stores";
 
-  //   export let initalName TODO: Send the initial name for the participant as a prop and pass it as an initial value
+  const { close } = getContext("Participant");
+
+  export let index;
+  export let resourceId;
+  export let resourceType;
+  export let formMethod;
 
   const { form, errors, handleChange, handleSubmit, isValid, isSubmitting } =
     createForm({
       initialValues: {
-        name: "",
+        name: $participants[index].name,
       },
       validationSchema: yup.object().shape({
         name: yup.string().required(),
       }),
       onSubmit: () => {
-        $formObject = $form;
-        console.log($formObject);
+        return formMethod(resourceId, resourceType, $form)
+          .then((response) => {
+            $participants[index] = response.data;
+            close();
+          })
+          .catch((error) => alert(error));
       },
     });
 </script>
 
+<h2>Edit Participant Data</h2>
 <form on:submit={handleSubmit}>
   <label for="name">name</label>
   <input
