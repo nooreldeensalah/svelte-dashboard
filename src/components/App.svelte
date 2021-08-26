@@ -5,20 +5,21 @@
   import requests from "../requests";
   import load from "../sql-query";
   import { onMount } from "svelte";
+  import Form from "./Form.svelte";
+  import { formObject } from "../stores";
 
   let settings = { columnFilter: true };
-
   let participants: Array<Participant>;
+
   onMount(() =>
-    load("SELECT * FROM participant").then(
-      async (values) => (participants = values)
-    )
+    load("SELECT * FROM participant").then((values) => (participants = values))
   );
 
   let handleEdit = (event, index) => {
     let resourceId = event.target.attributes["data-id"].value;
     let resourceType = event.target.attributes["data-type"].value;
     let requestBody; // TODO: Implement pop-up form for requestBody
+
     requests
       .patchResource(resourceId, resourceType, requestBody)
       .then((response) => (participants[index] = response.data))
@@ -42,7 +43,7 @@
           {name}
         </td>
         <td>
-          <button data-type="participants" data-id={id} on:click={(event, index = i) => handleEdit(event, index)} >Edit</button>
+          <button data-type="participants" data-id={id} on:click={(event, index = i) => handleEdit(event, index)}>Edit</button>
         </td>
       </tr>
     {/each}
