@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
   import { createForm } from "svelte-forms-lib";
   import * as yup from "yup";
   import { getContext } from "svelte";
-  import { participants } from "../stores";
+  import { participants, labels } from "../stores";
 
   const { close } = getContext("Participant");
 
@@ -14,7 +14,10 @@
   const { form, errors, handleChange, handleSubmit, isValid, isSubmitting } =
     createForm({
       initialValues: {
-        name: $participants[index].name,
+        name:
+          resourceType == "participants"
+            ? $participants[index].name
+            : $labels[index].name,
       },
       validationSchema: yup.object().shape({
         name: yup.string().required(),
@@ -22,7 +25,11 @@
       onSubmit: () => {
         return formMethod(resourceId, resourceType, $form)
           .then((response) => {
-            $participants[index] = response.data;
+            if (resourceType == "participants") {
+              $participants[index] = response.data;
+            } else {
+              $labels[index] = response.data;
+            }
             close();
           })
           .catch((error) => alert(error));
@@ -30,7 +37,7 @@
     });
 </script>
 
-<h2>Edit Participant Data</h2>
+<h2>Edit {resourceType == "participants" ? "Participant" : "Label"} Data</h2>
 <form on:submit={handleSubmit}>
   <label for="name">name</label>
   <input
@@ -66,9 +73,7 @@
     --red: #ff6b6b;
   }
 
-  input,
-  select,
-  textarea {
+  input {
     font-family: inherit;
     font-size: inherit;
     max-width: 400px;
@@ -81,21 +86,13 @@
     background: var(--white);
   }
 
-  select {
-    height: 45px;
-  }
-
-  input:focus,
-  select:focus,
-  textarea:focus {
+  input:focus {
     outline: none;
     box-shadow: 0 0 0 4px rgb(227, 227, 245);
     border-color: var(--grey);
   }
 
-  input:disabled,
-  select:disabled,
-  textarea:disabled {
+  input:disabled {
     color: #ccc;
   }
 
