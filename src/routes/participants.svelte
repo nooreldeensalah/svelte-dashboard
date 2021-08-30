@@ -36,7 +36,19 @@
 				.catch((error) => alert(error));
 		}
 	};
+
+	let handlePost = (event) => {
+		modal.set(
+			bind(ParticipantsLabelsForm, {
+				resourceType: event.target.attributes['data-type'].value,
+				formMethod: requests.postResource
+			})
+		);
+	};
+	
 </script>
+
+<button data-type="participants" on:click={handlePost}> Add participant </button>
 
 <Datatable settings={$settings} data={$participants}>
 	<thead>

@@ -21,6 +21,7 @@
 			})
 		);
 	};
+
 	let handleDelete = (event) => {
 		// A UI optimization would be to use a modal form to confirm but I might not make it for now.
 		let deleteConfirmation = confirm('Are you sure you want to delete this record?');
